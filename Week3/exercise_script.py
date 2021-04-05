@@ -23,7 +23,16 @@ plt.ion()
 
 # load the necessary data here and transform to a UTM projection
 
+counties = gpd.read_file('data_files/Counties.shp')
+counties = counties.to_crs(epsg=2157)
+wards = gpd.read_file('data_files/NI_Wards.shp')
+wards = wards.to_crs(epsg=2157)
+
 # your analysis goes here...
+
+join = gpd.sjoin(counties, wards, how='inner', lsuffix='left', rsuffix='right')
+
+print(join.groupby(['CountyName'])['Population'].sum())
 
 # ---------------------------------------------------------------------------------------------------------------------
 # below here, you may need to modify the script somewhat to create your map.
@@ -36,7 +45,7 @@ fig, ax = plt.subplots(1, 1, figsize=(10, 10), subplot_kw=dict(projection=myCRS)
 gridlines = ax.gridlines(draw_labels=True,
                          xlocs=[-8, -7.5, -7, -6.5, -6, -5.5],
                          ylocs=[54, 54.5, 55, 55.5])
-gridlines.right_labels = False
+gridlines.right_labels = True
 gridlines.bottom_labels = False
 
 # to make a nice colorbar that stays in line with our map, use these lines:
@@ -52,7 +61,7 @@ county_outlines = ShapelyFeature(counties['geometry'], myCRS, edgecolor='r', fac
 ax.add_feature(county_outlines)
 county_handles = generate_handles([''], ['none'], edge='r')
 
-ax.legend(county_handles, ['County Boundaries'], fontsize=12, loc='upper left', framealpha=1)
+ax.legend(county_handles, ['County Boundaries'], fontsize=12, loc='upper left', frameon=True, framealpha=1)
 
 # save the figure
-# fig.savefig('sample_map.png', dpi=300, bbox_inches='tight')
+#fig.savefig('sample_map3.jpg', dpi=300, bbox_inches='tight')
