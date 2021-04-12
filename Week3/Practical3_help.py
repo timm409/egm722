@@ -21,22 +21,9 @@ new_join = join.groupby(['CountyName'])['Population'].sum()
 
 print(new_join)
 
-wardpop = wards.groupby(['Ward'], as_index=False)['Population'].sum()
+wardpop = wards.groupby(['Ward'])['Population'].sum()
+wardpop[wardpop['Population']==wardpop['Population'].max()]
 
 print('The ward with the largest population is {}'.format(wardpop.max()))
 print('The ward with the smallest population is {}'.format(wardpop.min()))
-
-join_total = join['Population'].sum()
-
-clipped = []
-for county in counties['CountyName'].unique():
-    tmp_clip = gpd.clip(wards, counties[counties['CountyName'] == county])
-    for i, row in tmp_clip.iterrows():
-        tmp_clip.loc[i, 'CountyName'] = county
-    clipped.append(tmp_clip)
-
-clipped_gdf = gpd.GeoDataFrame(pd.concat(clipped))
-clip_total = clipped_gdf['Population'].sum()
-
-print(join_total / clip_total)
 
